@@ -35,10 +35,10 @@ python scripts/inverse_kinematics.py
 Note that the tracking is done by purely teleporting the joint positions to the output from IK; there is still no control involved.
 
 ### Theoretical questions
-1. If you increase the width of the Lemniscate (increasing a), what issue can happen with the robot performing IK?
-2. What can happen if you change the dt parameter in IK?
-3. We implemented a simple numerical IK solver. What are the advantages and disadvantages compared to an analytical IK solver?
-4. What are the limits of our IK solver compared to state-of-the-art IK solvers?
+1. If you increase the width of the Lemniscate (increasing a), what issue can happen with the robot performing IK? IK may fail to converge within the iteration threshold. The keypoints may also be outside the reachable workspace.
+2. What can happen if you change the dt parameter in IK? If too large, the robot may experience aggressive jumps in joint space, overshoot and oscillate. If too little, it can converge too slowly, but should be numerically more stable.
+3. We implemented a simple numerical IK solver. What are the advantages and disadvantages compared to an analytical IK solver? Many robot structures do not have (derivable) analytical solutions for IK. Numerical solvers are only local and are not guaranteed to find a global optimum. 
+4. What are the limits of our IK solver compared to state-of-the-art IK solvers? SOTA solvers are better at globalization and regularization - adaptive damping, warm starts, line search,...
 
 The theoretical questions require only short and direct answers. Each question is expected to have a 1-sentence answer.
 
