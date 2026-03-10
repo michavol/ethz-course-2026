@@ -3,3 +3,4 @@ __pycache__/
 logs/
 mujoco/
 so101_gym.egg-info/
+.DS_Store

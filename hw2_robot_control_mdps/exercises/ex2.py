@@ -1,25 +1,26 @@
 import numpy as np
 
 
-def generate_quintic_spline_waypoints(start, end, num_points):
+def generate_quintic_spline_waypoints(
+    start: np.ndarray, end: np.ndarray, num_points: int
+) -> np.ndarray:
+    """Generate trajectory waypoints using quintic time scaling.
 
-    """
-    TODO:
+    Uses the time-scaling polynomial f(s) = 10s^3 - 15s^4 + 6s^5 to
+    interpolate smoothly between the start and end waypoints with zero
+    velocity and acceleration at both boundaries.
 
-    Steps:
-    1. Generate `num_points` linearly spaced time steps `s` between 0 and 1.
-    2. Apply the quintic time scaling polynomial function which can be found in the slides to get `f_s`.
-    3. Interpolate between `start` and `end` using `start + (end - start) * f_s`.
-    
     Args:
-        start (np.ndarray): Starting waypoint.
-        end (np.ndarray): Ending waypoint.
-        num_points (int): Number of points in the trajectory.
-        
+        start: Starting waypoint (shape: dof,).
+        end: Ending waypoint (shape: dof,).
+        num_points: Number of points in the trajectory.
+
     Returns:
-        np.ndarray: Generated waypoints.
+        Array of waypoints with shape (num_points, dof).
     """
-    raise NotImplementedError()
+    s = np.linspace(0.0, 1.0, num_points)
+    f_s = 10.0 * s**3 - 15.0 * s**4 + 6.0 * s**5
+    return start + (end - start) * f_s[:, np.newaxis]
 
 
 def pid_control(tracking_error_history, timestep, Kp=150.0, Ki=0.0, Kd=0.01):
@@ -44,5 +45,20 @@ def pid_control(tracking_error_history, timestep, Kp=150.0, Ki=0.0, Kd=0.01):
     Returns:
         np.ndarray: Control signal.
     """
-    raise NotImplementedError()
+    errors = np.asarray(tracking_error_history)
+
+    # Proportional term uses the most recent error.
+    e_k = errors[-1]
+
+    # Integral term: sum of all past errors scaled by timestep.
+    integral = np.sum(errors, axis=0) * timestep
+
+    # Derivative term: finite difference of the last two errors.
+    if errors.shape[0] < 2:
+        derivative = np.zeros_like(e_k)
+    else:
+        e_k_minus_1 = errors[-2]
+        derivative = (e_k - e_k_minus_1) / timestep
+
+    return Kp * e_k + Ki * integral + Kd * derivative
             
