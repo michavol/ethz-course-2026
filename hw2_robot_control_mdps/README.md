@@ -36,10 +36,21 @@ python scripts/inverse_kinematics.py
 Note that the tracking is done by purely teleporting the joint positions to the output from IK; there is still no control involved.
 
 ### Theoretical questions
-1. If you increase the width of the Lemniscate (increasing a), what issue can happen with the robot performing IK? IK may fail to converge within the iteration threshold. The keypoints may also be outside the reachable workspace.
-2. What can happen if you change the dt parameter in IK? If too large, the robot may experience aggressive jumps in joint space, overshoot and oscillate. If too little, it can converge too slowly, but should be numerically more stable.
-3. We implemented a simple numerical IK solver. What are the advantages and disadvantages compared to an analytical IK solver? Many robot structures do not have (derivable) analytical solutions for IK. Numerical solvers are only local and are not guaranteed to find a global optimum. 
-4. What are the limits of our IK solver compared to state-of-the-art IK solvers? SOTA solvers are better at globalization and regularization - adaptive damping, warm starts, line search,...
+1. If you increase the width of the Lemniscate (increasing a), what issue can happen with the robot performing IK? 
+
+IK may fail to converge within the iteration threshold. The keypoints may also be outside the reachable workspace.
+
+2. What can happen if you change the dt parameter in IK? 
+
+If too large, the robot may experience aggressive jumps in joint space, overshoot and oscillate. If too little, it can converge too slowly, but should be numerically more stable.
+
+3. We implemented a simple numerical IK solver. What are the advantages and disadvantages compared to an analytical IK solver? 
+
+Many robot structures do not have (derivable) analytical solutions for IK. Numerical solvers are only local and are not guaranteed to find a global optimum. 
+
+4. What are the limits of our IK solver compared to state-of-the-art IK solvers? 
+
+SOTA solvers are better at globalization and regularization - adaptive damping, warm starts, line search,...
 
 The theoretical questions require only short and direct answers. Each question is expected to have a 1-sentence answer.
 
@@ -128,9 +139,20 @@ A viewer window should pop up showing the robot smoothly moving between several 
 ### Theoretical questions
 To get a feeling for the choice of the PID gains, you will analyze how their choice influences the behavior of the waypoint tracking. 
 Test different settings of the gains to be able to answer the following:
-1. If you keep increasing $K_P$, what issue arises when tracking the waypoints?
-2. How does $K_D$ mitigate the effect you saw above when increasing $K_P$?
+1. If you keep increasing $K_P$, what issue arises when tracking the waypoints? 
+
+It gets stuck and oscillates between states. This is because the controller overshoots the target.
+
+
+2. How does $K_D$ mitigate the effect you saw above when increasing $K_P$? 
+
+$K_D$ helps by damping the system, as it penalizes rapid changes in error, thereby reducing overshoot and oscillation caused by a high $K_P$.
+
+
 3. In what scenarios is a non-zero $K_I$ needed for the controller to perform well?
+
+
+A non-zero $K_I$ is needed when there is a persistent steady-state error (i.e., the controller consistently fails to reach the exact target due to modeling errors, unmodeled dynamics, or external disturbances). The integral term accumulates this constant error over time and applies a correction, ensuring that the system eventually reaches the desired setpoint.
 
 There is no need to show these behavior changes in the video and you can just write down your answers in the video. Or say them out loud.
 The theoretical questions require only short and direct answers. Each question is expected to have a 1-sentence answer.
